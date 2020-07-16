@@ -7,7 +7,7 @@
 # & = bitwise AND (different from logical AND, which is and)
 # | = bitwise OR (different from logical OR, which is or)
 # << = bitwise shift left (equivalent to multiplying by 2 actually)
-# ~ = bitwise NOT (flipping all the bit)
+# ~ = bitwise NOT (flipping all the bits)
 # // = integer divison (if only a single forward-slash, it is float division)
 
 # these initializations are referred to squares that have values on input
@@ -24,12 +24,12 @@ block = [0] * 9 # 9 blocks consisting of 3x3 mini-squares
 row = [0] * 9 # 9 rows of 9 mini-squares per row
 col = [0] * 9 # 9 columns of 9 mini-squares per column
 
-# initializations for Sudoku sequence - knowing what value to put in the empty mini-squares
+# initializations for Sudoku sequence - process of knowing what value to put in the empty mini-squares
 seqPtr = 0
 sequence = [0] * 81
 
 count = 0 # initialization for overall count of how many guesses overall
-levelCount = [0] * 81 # initialization of the array of mini-squares  
+levelCount = [0] * 81 # initialization of the array containing of how many placements/guesses were made in a mini-square
 
 class SudokuSolver:
 
@@ -46,10 +46,10 @@ class SudokuSolver:
 
         entry[square] = valbit # putting to the mini-square twice the value of the input
         block[inBlock[square]] &= ~valbit 
-        col[j] &= ~valbit # can be in this way also: col[inCol[square]] = col[inCol[square]] & ~valbit
-        row[i] &= ~valbit # can be in this way also: row[inRow[square]] = row[inRow[square]] & ~valbit
+        col[j] &= ~valbit # can be in this way also: col[inCol[square]] &= ~valbit
+        row[i] &= ~valbit # can be in this way also: row[inRow[square]] &= ~valbit
 
-        global seqPtr # this is actually frowned by Python developers: putting the global keyword :)
+        global seqPtr # this is actually frowned upon by Python developers: putting the global keyword :)
         seqPtr2 = seqPtr # initializing a second sequence pointer based on the current global sequence pointer
 
         while (seqPtr2 < 81 and sequence[seqPtr2] != square):
@@ -85,7 +85,7 @@ class SudokuSolver:
 
     # method for console input of the Sudoku puzzle
     def consoleInput(self):
-        inputString = [''] * 80 # in terms of C style, a character string with 80 bits
+        inputString = [''] * 80 # in terms of C style, a character string with 80 bits; theoretically it should still work if inputString = [''] * 9
 
         for i in range(9):
             print("Row %d: " % (i+1), end='')
@@ -107,10 +107,10 @@ class SudokuSolver:
         print()
 
         # this while loop will cause a runtime error if you input a fully solved Sudoku puzzle
-        while(levelCount[S] == 0):
-            if(S < 80): 
+        while(levelCount[S] == 0): # levelCount[S] represents how many placements/guesses were done, and there are only 81 squares in a Sudoku Puzzle
+            if(S < 80): # array-indexing in Python is 0-based, thus going over 80 will lead to an error
                 S += 1
-            else: # this else block prevents the error from happening, but I do not have a full explanation yet as to why or how it happens
+            else: # break the loop when S reaches 80 already
                 break
         
         i = 0
@@ -144,7 +144,7 @@ class SudokuSolver:
             Possibles = block[inBlock[Square]] & row[inRow[Square]] & col[inCol[Square]]
             BitCount = 0
             while (Possibles):
-                Possibles &= ~(Possibles & -Possibles)
+                Possibles &= ~(Possibles & -Possibles) # the one in parenthesis gets the least significant '1' bit, and then proceeds to flip the bits, and does logical AND to the original value
                 BitCount += 1
             if (BitCount < MinBitCount):
                 MinBitCount = BitCount
@@ -167,26 +167,27 @@ class SudokuSolver:
 
         Square = sequence[S]
 
+        #these indexes should have a value greater than or equal to zero and less than 9
         BlockIndex = inBlock[Square]
         RowIndex = inRow[Square]
         ColIndex = inCol[Square]
 
         Possibles = block[BlockIndex] & row[RowIndex] & col[ColIndex]
         while(Possibles):
-            valbit = Possibles & (-Possibles)
-            Possibles &= ~valbit
-            entry[Square] = valbit
-            block[BlockIndex] &= ~valbit
-            row[RowIndex] &= ~valbit
-            col[ColIndex] &= ~valbit
+            valbit = Possibles & (-Possibles) # gets the least significant '1' bit, basically where the first 1 bits of both numbers are going to intersect; this is where calculation of what to put in the empty field mini-squares
+            Possibles &= ~valbit # Possibles = Possibles & ~valbit, sort of reducing the number of possibilities left
+            entry[Square] = valbit # this is where placing the value actually happens
+            block[BlockIndex] &= ~valbit 
+            row[RowIndex] &= ~valbit 
+            col[ColIndex] &= ~valbit 
 
-            self.place(S + 1)
+            self.place(S + 1) # recursive call
 
             block[BlockIndex] |= valbit
-            row[RowIndex] |= valbit
-            col[ColIndex] |= valbit
-        
-        entry[Square] = CONST_BLANK
+            row[RowIndex] |= valbit 
+            col[ColIndex] |= valbit 
+
+        entry[Square] = CONST_BLANK # can be put inside while loop
 
         self.SwapSeqEntries(S, S2)
    
@@ -197,7 +198,7 @@ class SudokuSolver:
                 square = 9 * i + j
                 inRow[square] = i
                 inCol[square] = j
-                inBlock[square] = (i // 3) * 3 + (j // 3)
+                inBlock[square] = (i // 3) * 3 + (j // 3) # both (i // 3) and (j // 3) will have values ranged from 0 to 2; a block is a 2D array with 3 rows and 3 columns, thus this formula for represntation
 
         for square in range(81):
             sequence[square] = square
@@ -205,7 +206,7 @@ class SudokuSolver:
             levelCount[square] = 0
 
         for i in range(9):
-            block[i] = row[i] = col[i] = CONST_ONES
+            block[i] = row[i] = col[i] = CONST_ONES # initialize the 9-bit integers
 
         self.consoleInput()
         self.place(seqPtr)
