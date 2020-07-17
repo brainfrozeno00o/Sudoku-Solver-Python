@@ -17,7 +17,7 @@ inCol = [0] * 81
 
 # initializations of constants
 CONST_BLANK = 0
-CONST_ONES = int(hex(0b1111111110), 16) # can actually be just 1022, this is to show that this integer is 9 bits
+CONST_ONES = 1022 # also int(hex(0b1111111110), 16), this is to show that this integer is 9 bits
 
 entry = [0] * 81 # mini-squares in a Sudoku puzzle for console input
 block = [0] * 9 # 9 blocks consisting of 3x3 mini-squares
@@ -83,13 +83,45 @@ class SudokuSolver:
                 print(ch, end=' ')
             print()
 
+    # method for duplicate checking of numbers in an input string
+    def duplicateCheck(self, string):
+        hasDuplicate = False
+
+        if(len(string) == 9):
+            if(string.count('1') > 1 or string.count('2') > 1 or string.count('3') > 1 or string.count('4') > 1 or string.count('5') > 1 or string.count('6') > 1 or string.count('7') > 1 or string.count('8') > 1 or string.count('9') > 1):
+                hasDuplicate = True
+        else:
+            hasDuplicate = True
+
+        return hasDuplicate
+
+    # method for checking if there is a non-numeric character in an input string
+    def nonNumericCheck(self, string):
+        hasNonNumeric = False
+
+        if(len(string) == 9):
+            for char in string:
+                if(not char.isnumeric() and char != '-'):
+                    hasNonNumeric = True
+                    break
+        else:
+            hasNonNumeric = True
+        
+        return hasNonNumeric
+
     # method for console input of the Sudoku puzzle
     def consoleInput(self):
-        inputString = [''] * 80 # in terms of C style, a character string with 80 bits; theoretically it should still work if inputString = [''] * 9
+        inputString = [''] * 9 # no buffer overflows should be allowed
 
         for i in range(9):
             print("Row %d: " % (i+1), end='')
-            inputString = input() # to be honest, validation should be put here; will implement soon
+            inputString = input()
+
+            # input validation is now here
+            while(len(inputString) != 9 or self.duplicateCheck(inputString) or self.nonNumericCheck(inputString)):
+                print("You can only input numbers from 1 to 9 without duplicating each number or '-' to represent an empty square and make sure that the length is EXACTLY 9.")
+                print("Row %d: " % (i+1), end='')
+                inputString = input()
 
             for j in range(9):
                 ch = inputString[j]
