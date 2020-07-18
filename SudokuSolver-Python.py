@@ -240,10 +240,42 @@ class SudokuSolver:
         for i in range(9):
             block[i] = row[i] = col[i] = CONST_ONES # initialize the 9-bit integers
 
-        self.consoleInput()
-        self.place(seqPtr)
-        print()
-        print("Total Count = %d" % count)
+        try:
+            with open("C:/Users/john.lingad/Downloads/Random Codes/Random-Codes/SudokuSolver-LHL/Sudoku-Solver-Python/custom-files/welcome-message.txt", "r") as f:
+                next_line = f.readline()
+                while(next_line):
+                    if(f.readline() != ''):
+                        print(next_line)
+                        next_line = f.readline()
+                    else:
+                        print(next_line, end=' ')
+                        break
+            
+            choice = input()
+
+            while(choice):
+                if(choice == '1'):
+                    self.consoleInput()
+                    self.place(seqPtr)
+                    print()
+                    print("Total Count = %d" % count)
+                    print()
+                    print("Great! Would you like to solve again? If so, input 1. Else, input 0/exit.")
+                    print()
+                    print("Please input your choice:", end=' ')
+                    choice = input()
+                elif(choice == '0' or choice.lower() == 'exit'):
+                    print()
+                    print("Thanks for using the program!")
+                    break
+                else:
+                    print()
+                    print("Invalid input given. Please input either 1 to see action or 0/exit to exit the program.")
+                    print()
+                    print("Please input your choice:", end=' ')
+                    choice = input()
+        except:
+            print("An error occured.")
 
 # call the class' main method
 if __name__ == "__main__":
