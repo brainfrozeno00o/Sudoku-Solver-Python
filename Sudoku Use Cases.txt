@@ -1,6 +1,6 @@
 Use Cases:
 
-Fully Solved:
+Case 1 - Fully Solved:
 
 987654321
 246173985
@@ -46,7 +46,7 @@ Count = 0
 
 Total Count = 0
 
-Easy:
+Case 2 - Easy:
 
 9-765-3-1
 24-1-39-5
@@ -96,7 +96,7 @@ Count = 28
 
 Total Count = 28
 
-Medium, Multiple Solutions:
+Case 3 - Medium, Multiple Solutions:
 
 9-6-7-4-3
 ---4--2--
@@ -176,7 +176,7 @@ Count = 55
 
 Total Count = 80
 
-Hard:
+Case 4 - Hard:
 
 ---------
 -----3-85
@@ -232,3 +232,79 @@ Level Counts:
 Count = 17697
 
 Total Count = 24394
+
+Case 5 - Repeating A Number, "Fully Solved":
+
+987654321
+246173985
+351928746
+128537694
+634892157
+795461832
+519286473
+472319568
+863745211
+
+Expected Behavior - Input Again Row 9:
+
+Row 1: 987654321
+Row 2: 246173985
+Row 3: 351928746
+Row 4: 128537694
+Row 5: 634892157
+Row 6: 795461832
+Row 7: 519286473
+Row 8: 472319568
+Row 9: 863745211
+You can only input numbers from 1 to 9 without duplicating each number or '-' to represent an empty square and make sure that the length is EXACTLY 9.
+Row 9:
+
+Case 6 -  Having a letter, "Fully Solved":
+
+987654321
+2461a3985
+351928746
+128537694
+634892157
+795461832
+519286473
+472319568
+863745211
+
+Expected Behavior - Next row that does not contain any letter will be considered row 2 instead. Ideally, if inputted one by one, if there is a letter in your input for a row, you are asked to input again a proper row.
+
+Row 1: 987654321
+Row 2: 2461a3985
+You can only input numbers from 1 to 9 without duplicating each number or '-' to represent an empty square and make sure that the length is EXACTLY 9.
+Row 2: 351928746
+Row 3: 128537694
+Row 4: 634892157
+Row 5: 795461832
+Row 6: 519286473
+Row 7: 472319568
+Row 8: 863745211
+
+Case 7 - Having a special symbol except for '-', "Fully Solved"
+
+987654321
+246173985
+351928746
+128537694
+634-92157
+795!61832
+519286473
+472319568
+863745211
+
+Expected Behavior - Next row that does not contain any special symbol, except for '-', will be considered row 6 instead. Ideally, if inputtted one by one, if there is a special symbol, aside from '-', you are asked to input again a proper row.
+
+Row 1: 987654321
+Row 2: 246173985
+Row 3: 351928746
+Row 4: 128537694
+Row 5: 634-92157
+Row 6: 795!61832
+You can only input numbers from 1 to 9 without duplicating each number or '-' to represent an empty square and make sure that the length is EXACTLY 9.
+Row 6: 519286473
+Row 7: 472319568
+Row 8: 863745211
