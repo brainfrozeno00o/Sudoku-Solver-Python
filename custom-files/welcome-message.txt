@@ -1,0 +1,7 @@
+Welcome to LHL's Sudoku Solver (Python version).
+
+This is completely made out of boredom, so please bear with me.
+
+If you have a Sudoku puzzle to be solved, please input 1. Else, you can input 0 or 'exit' to exit the program.
+
+Please input your choice here:
