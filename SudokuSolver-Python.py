@@ -70,7 +70,7 @@ class SudokuSolver:
                 print()
             for j in range(9):
                 if (j % 3 == 0):
-                    print(' ', end='') # not printing a new line, just a space
+                    print(f' ', end='') # not printing a new line, just a space
                 valbit = entry[square]
                 square += 1
                 if (valbit == 0):
@@ -80,7 +80,7 @@ class SudokuSolver:
                         if (valbit == (1 << val)):
                             ch = str(val)
                             break
-                print(ch, end=' ')
+                print(f'{ch}', end=' ')
             print()
 
     # method for duplicate checking of numbers in an input string
@@ -114,17 +114,17 @@ class SudokuSolver:
         inputString = [''] * 9 # no buffer overflows should be allowed
 
         for i in range(9):
-            print("Row %d: " % (i+1), end='')
+            print(f"Row {i+1}: ", end='')
             inputString = input()
 
             if(inputString.lower() == 'blank'):
                 inputString = '---------'
-                print("Row %d: ---------" % (i+1))
+                print(f"Row {i+1}: ---------")
             else:
                 # input validation is now here
                 while(len(inputString) != 9 or self.duplicateCheck(inputString) or self.nonNumericCheck(inputString)):
-                    print("You can only input numbers from 1 to 9 without duplicating each number or '-' to represent an empty square and make sure that the length is EXACTLY 9.")
-                    print("Row %d: " % (i+1), end='')
+                    print(f"You can only input numbers from 1 to 9 without duplicating each number or '-' to represent an empty square and make sure that the length is EXACTLY 9.")
+                    print(f"Row {i+1}: ", end='')
                     inputString = input()
 
             for j in range(9):
@@ -139,7 +139,7 @@ class SudokuSolver:
         S = 0
 
         print()
-        print("Level Counts: ")
+        print(f"Level Counts: ")
         print()
 
         # this while loop will cause a runtime error if you input a fully solved Sudoku puzzle
@@ -153,7 +153,7 @@ class SudokuSolver:
         
         while(S < 81):
             seq = sequence[S]
-            print("(%d, %d): %3d " % ((seq // 9) + 1, (seq % 9) + 1, levelCount[S]), end=' ') # formula here is row #, col #, # of placements/guesses
+            print(f"{(seq // 9) + 1}, {(seq % 9) + 1}):  {levelCount[S]} ",   end=' ') # formula here is row #, col #, # of placements/guesses
             i += 1
             if(i > 5):
                 print()
@@ -162,7 +162,7 @@ class SudokuSolver:
         
         print()
         print()
-        print("Count = %d" % count)
+        print(f"Count = {count}")
 
     # method to invoke if program has successfully solved the Sudoku puzzle
     def succeed(self):
@@ -226,6 +226,39 @@ class SudokuSolver:
         entry[Square] = CONST_BLANK # can be put inside while loop
 
         self.SwapSeqEntries(S, S2)
+    
+    def reset_everything(self):
+        global inBlock, inRow, inCol, entry, block, row, col, seqPtr, sequence, count, levelCount
+
+        inBlock = [0] * 81
+        inRow = [0] * 81
+        inCol = [0] * 81
+
+        entry = [0] * 81
+        block = [0] * 9
+        row = [0] * 9
+        col = [0] * 9
+
+        seqPtr = 0
+        sequence = [0] * 81
+
+        count = 0
+        levelCount = [0] * 81
+
+        for i in range(9):
+            for j in range(9):
+                square = 9 * i + j
+                inRow[square] = i
+                inCol[square] = j
+                inBlock[square] = (i // 3) * 3 + (j // 3)
+
+        for square in range(81):
+            sequence[square] = square
+            entry[square] = CONST_BLANK
+            levelCount[square] = 0
+
+        for i in range(9):
+            block[i] = row[i] = col[i] = CONST_ONES
    
     # main method
     def main(self):
@@ -249,10 +282,10 @@ class SudokuSolver:
                 next_line = f.readline()
                 while(next_line):
                     if(f.readline() != ''):
-                        print(next_line)
+                        print(f'{next_line}')
                         next_line = f.readline()
                     else:
-                        print(next_line, end=' ')
+                        print(f'{next_line}', end=' ')
                         break
             
             choice = input()
@@ -261,26 +294,42 @@ class SudokuSolver:
                 if(choice == '1'):
                     self.consoleInput()
                     self.place(seqPtr)
-                    print()
-                    print("Total Count = %d" % count)
-                    print()
-                    print("Great! Would you like to solve again? If so, input 1. Else, input 0/exit.")
-                    print()
-                    print("Please input your choice:", end=' ')
+                    print(f"\nTotal Count = {count}\n")
+                    self.reset_everything()
+                    print(f"Great! Would you like to solve again? If so, input 1. Else, input 0/exit.\n")
+                    print(f"Please input your choice:", end=' ')
                     choice = input()
                 elif(choice == '0' or choice.lower() == 'exit'):
-                    print()
-                    print("Thanks for using the program!")
+                    print(f"\nThanks for using the program!")
                     break
                 else:
-                    print()
-                    print("Invalid input given. Please input either 1 to see action or 0/exit to exit the program.")
-                    print()
-                    print("Please input your choice:", end=' ')
+                    print(f"\nInvalid input given. Please input either 1 to see action or 0/exit to exit the program.\n")
+                    print(f"Please input your choice:", end=' ')
                     choice = input()
         except:
-            print("An error occured.")
+            print(f"\nAn error occured.")
+
+import cProfile
+import pstats
+import io
+from datetime import datetime
 
 # call the class' main method
 if __name__ == "__main__":
-    SudokuSolver().main()
+    #profiling code
+    with cProfile.Profile() as pr:
+        pr.enable()
+        SudokuSolver().main()
+        pr.disable()
+
+    # making results readable to a human
+    s = io.StringIO()
+    ps = pstats.Stats(pr, stream=s).sort_stats('tottime')
+    ps.print_stats()
+
+    #getting file name for logging
+    now = datetime.now()
+    dt_string = now.strftime("%d%m%Y%H%M%S")
+
+    with open(f"C:/Users/john.lingad/Downloads/Random Codes/Random-Codes/SudokuSolver-LHL/Sudoku-Solver-Python/program-logs/{dt_string}.txt", 'w+') as f:
+        f.write(s.getvalue())
