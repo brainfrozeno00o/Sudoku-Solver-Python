@@ -117,11 +117,15 @@ class SudokuSolver:
             print("Row %d: " % (i+1), end='')
             inputString = input()
 
-            # input validation is now here
-            while(len(inputString) != 9 or self.duplicateCheck(inputString) or self.nonNumericCheck(inputString)):
-                print("You can only input numbers from 1 to 9 without duplicating each number or '-' to represent an empty square and make sure that the length is EXACTLY 9.")
-                print("Row %d: " % (i+1), end='')
-                inputString = input()
+            if(inputString.lower() == 'blank'):
+                inputString = '---------'
+                print("Row %d: ---------" % (i+1))
+            else:
+                # input validation is now here
+                while(len(inputString) != 9 or self.duplicateCheck(inputString) or self.nonNumericCheck(inputString)):
+                    print("You can only input numbers from 1 to 9 without duplicating each number or '-' to represent an empty square and make sure that the length is EXACTLY 9.")
+                    print("Row %d: " % (i+1), end='')
+                    inputString = input()
 
             for j in range(9):
                 ch = inputString[j]
