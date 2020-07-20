@@ -18,6 +18,7 @@ inCol = [0] * 81
 # initializations of constants
 CONST_BLANK = 0
 CONST_ONES = 1022 # also int(hex(0b1111111110), 16), this is to show that this integer is 9 bits
+CONST_OWN_FILEPATH = open(f"decrypted-file-path.txt", "r").read()
 
 entry = [0] * 81 # mini-squares in a Sudoku puzzle for console input
 block = [0] * 9 # 9 blocks consisting of 3x3 mini-squares
@@ -278,7 +279,7 @@ class SudokuSolver:
             block[i] = row[i] = col[i] = CONST_ONES # initialize the 9-bit integers
 
         try:
-            with open("C:/Users/john.lingad/Downloads/Random Codes/Random-Codes/SudokuSolver-LHL/Sudoku-Solver-Python/custom-files/welcome-message.txt", "r") as f:
+            with open(f"{CONST_OWN_FILEPATH}/custom-files/welcome-message.txt", "r") as f:
                 next_line = f.readline()
                 while(next_line):
                     if(f.readline() != ''):
@@ -331,5 +332,5 @@ if __name__ == "__main__":
     now = datetime.now()
     dt_string = now.strftime("%d%m%Y%H%M%S")
 
-    with open(f"C:/Users/john.lingad/Downloads/Random Codes/Random-Codes/SudokuSolver-LHL/Sudoku-Solver-Python/program-logs/{dt_string}.txt", 'w+') as f:
+    with open(f"{CONST_OWN_FILEPATH}/program-logs/{dt_string}.txt", 'w+') as f:
         f.write(s.getvalue())
