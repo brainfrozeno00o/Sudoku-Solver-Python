@@ -18,7 +18,6 @@ inCol = [0] * 81
 # initializations of constants
 CONST_BLANK = 0
 CONST_ONES = 1022 # also int(hex(0b1111111110), 16), this is to show that this integer is 9 bits
-CONST_OWN_FILEPATH = open(f"decrypted-file-path.txt", "r").read()
 
 entry = [0] * 81 # mini-squares in a Sudoku puzzle for console input
 block = [0] * 9 # 9 blocks consisting of 3x3 mini-squares
@@ -35,13 +34,13 @@ levelCount = [0] * 81 # initialization of the array containing of how many place
 class SudokuSolver:
 
     # basically swapping elements based on index in the sequence array
-    def SwapSeqEntries(self, S1, S2):
+    def swapSeqEntries(self, S1, S2):
         temp = sequence[S2]
         sequence[S2] = sequence[S1]
         sequence[S1] = temp
 
     # method for putting mini-squares with given values based on the input
-    def InitEntry(self, i, j, val):
+    def initEntry(self, i, j, val):
         square = 9 * i + j # i = row, j = column; basically the formula on which mini-square to put
         valbit = 1 << val # left-shift 1 bit to the left, equivalent to multiplying by 2
 
@@ -56,7 +55,7 @@ class SudokuSolver:
         while (seqPtr2 < 81 and sequence[seqPtr2] != square):
             seqPtr2 += 1
 
-        self.SwapSeqEntries(seqPtr, seqPtr2)
+        self.swapSeqEntries(seqPtr, seqPtr2)
         seqPtr += 1
 
     # method of printing the current state of the Sudoku puzzle on input and when solved
@@ -131,7 +130,7 @@ class SudokuSolver:
             for j in range(9):
                 ch = inputString[j]
                 if (ch >= '1' and ch <= '9'): # surprising that this also works in Python, similar to int(ch) < 1 and int(ch) > 9 but make sure ch is not '-'
-                    self.InitEntry(i, j, int(ch))
+                    self.initEntry(i, j, int(ch))
         
         self.printArray()
 
@@ -200,7 +199,7 @@ class SudokuSolver:
         count += 1
         
         S2 = self.nextSeq(S)
-        self.SwapSeqEntries(S, S2)
+        self.swapSeqEntries(S, S2)
 
         Square = sequence[S]
 
@@ -211,7 +210,7 @@ class SudokuSolver:
 
         Possibles = block[BlockIndex] & row[RowIndex] & col[ColIndex]
         while(Possibles):
-            valbit = Possibles & (-Possibles) # gets the least significant '1' bit, basically where the first 1 bits of both numbers are going to intersect; this is where calculation of what to put in the empty field mini-squares
+            valbit = Possibles & (-Possibles) # gets the least significant '1' bit, basically where the first 1 bits of both numbers are going to intersect; this is where calculation of what to put in an empty mini-square happens
             Possibles &= ~valbit # Possibles = Possibles & ~valbit, sort of reducing the number of possibilities left
             entry[Square] = valbit # this is where placing the value actually happens
             block[BlockIndex] &= ~valbit 
@@ -226,8 +225,9 @@ class SudokuSolver:
 
         entry[Square] = CONST_BLANK # can be put inside while loop
 
-        self.SwapSeqEntries(S, S2)
+        self.swapSeqEntries(S, S2)
     
+    # method for resetting everything when choosing to solve again
     def reset_everything(self):
         global inBlock, inRow, inCol, entry, block, row, col, seqPtr, sequence, count, levelCount
 
@@ -245,24 +245,9 @@ class SudokuSolver:
 
         count = 0
         levelCount = [0] * 81
-
-        for i in range(9):
-            for j in range(9):
-                square = 9 * i + j
-                inRow[square] = i
-                inCol[square] = j
-                inBlock[square] = (i // 3) * 3 + (j // 3)
-
-        for square in range(81):
-            sequence[square] = square
-            entry[square] = CONST_BLANK
-            levelCount[square] = 0
-
-        for i in range(9):
-            block[i] = row[i] = col[i] = CONST_ONES
-   
-    # main method
-    def main(self):
+    
+    # method for initializing when starting to solve
+    def initialize(self):
         for i in range(9):
             for j in range(9):
                 square = 9 * i + j
@@ -277,9 +262,11 @@ class SudokuSolver:
 
         for i in range(9):
             block[i] = row[i] = col[i] = CONST_ONES # initialize the 9-bit integers
-
+   
+    # main method
+    def main(self):
         try:
-            with open(f"{CONST_OWN_FILEPATH}/custom-files/welcome-message.txt", "r") as f:
+            with open(f"./custom-files/welcome-message.txt", "r") as f:
                 next_line = f.readline()
                 while(next_line):
                     if(f.readline() != ''):
@@ -290,13 +277,17 @@ class SudokuSolver:
                         break
             
             choice = input()
+            iteration = 0
 
             while(choice):
                 if(choice == '1'):
+                    iteration += 1
+                    if (iteration > 1):
+                        self.reset_everything()
+                    self.initialize()
                     self.consoleInput()
                     self.place(seqPtr)
                     print(f"\nTotal Count = {count}\n")
-                    self.reset_everything()
                     print(f"Great! Would you like to solve again? If so, input 1. Else, input 0/exit.\n")
                     print(f"Please input your choice:", end=' ')
                     choice = input()
@@ -313,6 +304,7 @@ class SudokuSolver:
 import cProfile
 import pstats
 import io
+import os
 from datetime import datetime
 
 # call the class' main method
@@ -332,5 +324,8 @@ if __name__ == "__main__":
     now = datetime.now()
     dt_string = now.strftime("%d%m%Y%H%M%S")
 
-    with open(f"{CONST_OWN_FILEPATH}/program-logs/{dt_string}.txt", 'w+') as f:
+    if (not os.path.isdir(f'./program-logs/')):
+        os.mkdir(f'./program-logs/')
+
+    with open(f"./program-logs/{dt_string}.txt", 'w+') as f:
         f.write(s.getvalue())

@@ -1,0 +1,14 @@
+# ignore folders
+/custom-files
+/program-logs
+
+# ignore other files
+Sample Run.txt
+decrypted-file-path.txt
+encrypt-decrypt.py
+
+# ignore batch files
+*.bat
+
+# ignore executable files
+*.exe
